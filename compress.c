@@ -372,8 +372,10 @@ int compress_write(struct compress *compress, const void *buf, unsigned int size
 		/* We can write if we have at least one fragment available
 		 * or there is enough space for all remaining data
 		 */
-		if ((avail.avail < frag_size) && (avail.avail < size)) {
-
+		if (compress->nonblocking) {
+			if(avail.avail == 0)
+				return total;
+		} else if ((avail.avail < frag_size) && (avail.avail < size)) {
 			if (compress->nonblocking)
 				return total;
 
